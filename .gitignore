@@ -1,27 +1,32 @@
-/bin/
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+.project
+# External tool builders
+.externalToolBuilders/
 
-# Compiled class file
-*.class
+# Locally stored "Eclipse launch configurations"
+*.launch
 
-# Log file
-*.log
 
-# BlueJ files
-*.ctxt
+# Java annotation processor (APT)
+.factorypath
+# Code Recommenders
+.recommenders/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Annotation Processing
+.apt_generated/
+.apt_generated_test/
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-/.metadata/
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
