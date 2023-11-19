@@ -1,4 +1,6 @@
+package problem1;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 @FunctionalInterface
@@ -24,6 +26,7 @@ public class JSONParser {
         this.json = json;
         this.parseArray = () -> this.parseArray();
         this.parseObject = () -> this.parseObject();
+        this.output = new HashMap<String,Object>();
     }
 
     public Map<String,Object> parse() {
