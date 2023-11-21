@@ -1,0 +1,7 @@
+I decided to take the easy way out in order save time. Its actually not that difficult to update
+the code in order to account for different data types. The first thing you need to do is update 
+the Node class so that it contains a more broad Object variable. This object variable would need to
+be restricted to objects that implement the serializable interface. Then, when printing or reading in
+the nodes from the serial, you simply need to call their respective serialize methods instead of 
+converting from int to string and string to int as was true in this case. For primitive data types,
+this would require also using the class wrappers (like Integer) that java has for them.
