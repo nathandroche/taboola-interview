@@ -89,7 +89,6 @@ public class JSONParserTest {
     	assertEquals((String)items.get(0), "number");
     	assertTrue(items.get(2) instanceof Map);
     	Map<String, Object> nested = (Map<String, Object>) items.get(2);
-    	System.out.print(nested.keySet());
     	assertEquals(nested.get("number"),"hello");
 		assertEquals(((JSONParser.ParsedNumber) items.get(1)).intComp,"123");
 		assertEquals(items.get(3),true);
