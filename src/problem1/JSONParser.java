@@ -64,8 +64,8 @@ public class JSONParser {
         this.valParsers[2] = () -> parseLiteral("true", true);
         this.valParsers[3] = () -> parseLiteral("false", true);
         this.valParsers[4] = () -> parseLiteral("null", true);
-//    	this.valParsers[5] = () -> parseObject();
-//    	this.valParsers[6] = () -> parseArray();
+    	this.valParsers[5] = () -> parseObject(true);
+    	this.valParsers[6] = () -> parseArray(true);
     }
 
     public Map<String,Object> execute() throws Exception {
@@ -73,18 +73,15 @@ public class JSONParser {
     	pos = 0;
     	this.output = new HashMap<String,Object>();
     	this.outputItems = new ArrayList<Object>();
-    	if (parseObject()) { //do we successfully parse an object?
+    	if (parseObject(false)) { //do we successfully parse an object?
     		//pack values into map form
     		Iterator<Object> iter = outputItems.iterator();
-    		while (iter.hasNext()) {
-    			//note: a correct parsing should have even num values correctly formatted
-    			output.put((String)iter.next(), iter.next());  
-    		}
+    		output = addObjectItems(iter);
     	} else {
-    		if (parseArray()) {//do we successfully parse an array?
+    		if (parseArray(false)) {//do we successfully parse an array?
     			//a JSON Array will simply be a dictionary with one entry: ("" : ArrayList)
-    			
-    			output.put("", outputItems);
+    			Iterator<Object> iter = outputItems.iterator();
+    			output.put("", addArrayItems(iter));
     		} else {
     			//this is the only failure mode that the parser has
     			//the next addition to this code might be more descriptive failure modes
@@ -142,11 +139,13 @@ public class JSONParser {
    
     
     
-    public boolean parseObject(){
+    public boolean parseObject(boolean isNested){
     	if (!checkChar('{')) 
     		return false;
-    	parseWhitespace();
+    	if(isNested)
+    		outputItems.add(nest.BEGINOBJECT);
     	while(pos < json.length() && currentChar() != '}') {
+        	parseWhitespace();
 			if (!parseString())
 	    		return false;
 			parseWhitespace();
@@ -159,11 +158,15 @@ public class JSONParser {
     	}
     	if (!checkChar('}'))
     		return false;
+    	if(isNested)
+    		outputItems.add(nest.ENDARRAY);
     	return true;
     }
 
-    public boolean parseArray(){
+    public boolean parseArray(boolean isNested){
     	boolean isArray = checkChar('[');
+    	if(isNested)
+    		outputItems.add(nest.BEGINARRAY);
     	parseWhitespace();
     	while(pos < json.length() && currentChar() != ']') {
 			if (!parseValue())
@@ -171,6 +174,8 @@ public class JSONParser {
 			if(!checkChar(','))
 				break;
     	}
+    	if(isNested)
+    		outputItems.add(nest.ENDARRAY);
     	isArray = isArray && checkChar(']');
         return isArray;
     }
@@ -291,7 +296,7 @@ public class JSONParser {
 
     public char currentChar(){
     	if (positionInvalid()) {
-    		return ' ';
+    		return ' '; //EOF character: should fail to match any expected or typed character
     	}
         return json.charAt(pos);
     }

@@ -50,6 +50,7 @@ public class JSONParserTest {
 	    }
     }
     
+    
     @Test
     public void testSimpleObject() {
     	JSONParser parser = new JSONParser("{\"number\":123}");
@@ -78,6 +79,36 @@ public class JSONParserTest {
     		e.printStackTrace();
     		fail();
     	}
+    	
+    }
+    
+    @Test
+    public void testComplexArray() {
+    	Map<String, Object> output = JSONParser.parse("[\"number\",123, {\"number\":\"hello\"}, true, false]");
+    	ArrayList<Object> items = (ArrayList<Object>) output.get("");
+    	assertEquals((String)items.get(0), "number");
+    	assertTrue(items.get(2) instanceof Map);
+    	Map<String, Object> nested = (Map<String, Object>) items.get(2);
+    	System.out.print(nested.keySet());
+    	assertEquals(nested.get("number"),"hello");
+		assertEquals(((JSONParser.ParsedNumber) items.get(1)).intComp,"123");
+		assertEquals(items.get(3),true);
+		assertEquals(items.get(4),false);
+    }
+    
+    @Test
+    public void testComplexObject() {
+    	Map<String, Object> output = JSONParser.parse("{\n"
+    			+ "\"debug\" : \"on\",\n"
+    			+ "\"window\" : {\n"
+    			+ "\"title\" : \"sample\",\n"
+    			+ "\"size\": 500\n"
+    			+ "}\n"
+    			+ "}");
+    	assertEquals(output.get("debug"),"on");
+    	assertEquals(((Map<String, Object>)(output.get("window"))).get("title"), "sample");
+    	JSONParser.ParsedNumber num = (JSONParser.ParsedNumber)((Map<String, Object>)(output.get("window"))).get("size");
+    	assertEquals(num.intComp, "500");
     	
     }
     
