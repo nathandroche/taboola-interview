@@ -1,9 +1,13 @@
 package test.problem1;
 import java.util.HashMap;
 import java.util.Map;
+// import java.io.BufferedReader;
+// import java.io.FileInputStream;
+// import java.io.FileNotFoundException;
+// import java.io.InputStreamReader;
 import java.util.ArrayList;
 import problem1.*;
-
+import test.resources.JSONFiles;
 
 import org.junit.Test;
 
@@ -84,29 +88,37 @@ public class JSONParserTest {
     
     @Test
     public void testComplexArray() {
-    	Map<String, Object> output = JSONParser.parse("[\"number\",123, {\"number\":\"hello\"}, true, false]");
-    	ArrayList<Object> items = (ArrayList<Object>) output.get("");
-    	assertEquals((String)items.get(0), "number");
-    	assertTrue(items.get(2) instanceof Map);
-    	Map<String, Object> nested = (Map<String, Object>) items.get(2);
-    	assertEquals(nested.get("number"),"hello");
-		assertEquals(items.get(1), 123);
-		assertEquals(items.get(3),true);
-		assertEquals(items.get(4),false);
+    	try {
+    		Map<String, Object> output = JSONParser.parse("[\"number\",123, {\"number\":\"hello\"}, true, false]");
+    		ArrayList<Object> items = (ArrayList<Object>) output.get("");
+        	assertEquals((String)items.get(0), "number");
+        	assertTrue(items.get(2) instanceof Map);
+        	Map<String, Object> nested = (Map<String, Object>) items.get(2);
+        	assertEquals(nested.get("number"),"hello");
+    		assertEquals(items.get(1), 123);
+    		assertEquals(items.get(3),true);
+    		assertEquals(items.get(4),false);
+    	} catch (Exception e) {
+    		fail();
+    	}
     }
     
     @Test
     public void testComplexObject() {
-    	Map<String, Object> output = JSONParser.parse("{\n"
-    			+ "\"debug\" : \"on\",\n"
-    			+ "\"window\" : {\n"
-    			+ "\"title\" : \"sample\",\n"
-    			+ "\"size\": 500\n"
-    			+ "}\n"
-    			+ "}");
-    	assertEquals(output.get("debug"),"on");
-    	assertEquals(((Map<String, Object>)(output.get("window"))).get("title"), "sample");
-    	assertEquals(((Map<String, Object>)(output.get("window"))).get("size"), 500);
+    	try {
+	    	Map<String, Object> output = JSONParser.parse("{\n"
+	    			+ "\"debug\" : \"on\",\n"
+	    			+ "\"window\" : {\n"
+	    			+ "\"title\" : \"sample\",\n"
+	    			+ "\"size\": 500\n"
+	    			+ "}\n"
+	    			+ "}");
+	    	assertEquals(output.get("debug"),"on");
+	    	assertEquals(((Map<String, Object>)(output.get("window"))).get("title"), "sample");
+	    	assertEquals(((Map<String, Object>)(output.get("window"))).get("size"), 500);
+    	} catch (Exception e) {
+    		fail();
+    	}
     	
     }
     
@@ -194,6 +206,37 @@ public class JSONParserTest {
 		assertTrue(csParser.checkChar('s'));
 	  }
 	
+	//I know its bad style, but because this is a skills assessment, I opted to leave my unused
+	//code as a comment
+	@Test
+	public void testBakeryJSON(){
+//		StringBuilder json = new StringBuilder();
+//		BufferedReader br;
+//		try {
+//			 br = new BufferedReader(
+//				new InputStreamReader(new FileInputStream("../resources/bakeryjson.txt")));
+//			String line;
+//			while ((line = br.readLine()) != null) {
+//				json.append(line);
+//			}
+//			br.close();
+//		} catch (Exception ex) {
+//			throw ex;
+//		}
+		try {
+			ArrayList<Object> parsed = (ArrayList<Object>)JSONParser.parse(JSONFiles.bakery).get("");
+			System.out.print("sanity");
+			Map<String, Object> firstCake = (Map<String, Object>)parsed.get(0);
+			
+			Map<String, Object> batters = (Map<String, Object>)firstCake.get("batters");
+			Map<String, Object> batterOne  = (Map<String, Object>) ((ArrayList<Object>)batters.get("batter")).get(0);
+			assertEquals(batterOne.get("type"), "Regular");
+			assertEquals(firstCake.get("ppu"), 0.55);
+		} catch (Exception e) {
+			fail("json format not detected");
+		}
+		 
+	}
 	
 }
 

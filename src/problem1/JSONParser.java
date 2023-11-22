@@ -21,13 +21,12 @@ public class JSONParser {
     private ArrayList<Object> outputItems;
     private parseFunction[] valParsers;
     
-    public static Map<String,Object> parse(String json){
+    public static Map<String,Object> parse(String json) throws Exception{
     	JSONParser parser = new JSONParser(json);
     	try {
     		return parser.execute();
     	} catch (Exception e) {
-    		e.printStackTrace();
-    		return null;
+    		throw e;
     	}
     }
     
