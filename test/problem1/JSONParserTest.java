@@ -56,7 +56,7 @@ public class JSONParserTest {
     	JSONParser parser = new JSONParser("{\"number\":123}");
     	try {
     		Map<String, Object> output = parser.execute();
-    		assertEquals(((JSONParser.ParsedNumber)output.get("number")).intComp,"123");
+    		assertEquals(output.get("number"),123);
     	} catch(Exception e) {
     		e.printStackTrace();
     		fail();
@@ -71,7 +71,7 @@ public class JSONParserTest {
     		Map<String, Object> output = parser.execute();
     		ArrayList<Object> items = (ArrayList<Object>) output.get("");
     		assertEquals((String)items.get(0), "number");
-    		assertEquals(((JSONParser.ParsedNumber) items.get(1)).intComp,"123");
+    		assertEquals(items.get(1),123);
     		assertEquals(items.get(2),null);
     		assertEquals(items.get(3),true);
     		assertEquals(items.get(4),false);
@@ -90,7 +90,7 @@ public class JSONParserTest {
     	assertTrue(items.get(2) instanceof Map);
     	Map<String, Object> nested = (Map<String, Object>) items.get(2);
     	assertEquals(nested.get("number"),"hello");
-		assertEquals(((JSONParser.ParsedNumber) items.get(1)).intComp,"123");
+		assertEquals(items.get(1), 123);
 		assertEquals(items.get(3),true);
 		assertEquals(items.get(4),false);
     }
@@ -106,8 +106,7 @@ public class JSONParserTest {
     			+ "}");
     	assertEquals(output.get("debug"),"on");
     	assertEquals(((Map<String, Object>)(output.get("window"))).get("title"), "sample");
-    	JSONParser.ParsedNumber num = (JSONParser.ParsedNumber)((Map<String, Object>)(output.get("window"))).get("size");
-    	assertEquals(num.intComp, "500");
+    	assertEquals(((Map<String, Object>)(output.get("window"))).get("size"), 500);
     	
     }
     
@@ -125,7 +124,6 @@ public class JSONParserTest {
     	assertTrue(parser.parseNumber());
     	parser = new JSONParser("-2544");
     	assertTrue(parser.parseNumber());
-    	
     	parser = new JSONParser("");
     	assertFalse(parser.parseNumber());
     	parser = new JSONParser("-");

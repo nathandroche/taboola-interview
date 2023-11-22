@@ -40,16 +40,41 @@ public class JSONParser {
     public class ParsedNumber {
     	public boolean isNegative;
     	public boolean isExpNegative;
-    	public String intComp;
-    	public String frac;
-    	public String exp;
+    	public String  intComp;
+    	public String  frac;
+    	public int     exp;
     	
-    	ParsedNumber(){
+    	public ParsedNumber(){
     		this.isNegative = false;
     		this.isExpNegative = false;
-    		this.intComp = "";
+    		this.intComp = "0";
     		this.frac = "";
-    		this.exp = "";
+    		this.exp = 0;
+    	}
+    	public Object calculateValue(){
+    		//we are going to forcefully truncate any exponents that are too large for a java double
+    		if (isExpNegative && (frac.length() + exp) > 320) {
+    			exp = exp - (frac.length() + exp - 320);
+    		} else if ((intComp.length() + exp) > 305) {
+    			exp = exp - (intComp.length() + exp - 305);
+    		}
+    		int intVal = Integer.parseInt(intComp);
+    		Double num;
+    		if (frac != "") {
+    			num = Double.parseDouble("0." + frac);
+    			num += intVal;
+    			if (isExpNegative) {
+    				return num / Math.pow(10, exp);
+    			} else {
+    				return num*Math.pow(10, exp);
+    			}
+    		} else {
+    			if (isExpNegative) {
+    				return intVal / (int) Math.pow(10, exp);
+    			} else {
+    				return intVal*(int) Math.pow(10, exp);
+    			}
+    		}
     	}
     }
 
@@ -144,6 +169,7 @@ public class JSONParser {
     		return false;
     	if(isNested)
     		outputItems.add(nest.BEGINOBJECT);
+    	parseWhitespace();
     	while(pos < json.length() && currentChar() != '}') {
         	parseWhitespace();
 			if (!parseString())
@@ -190,10 +216,12 @@ public class JSONParser {
     
     public boolean orCombinator(parseFunction[] parsers) {
     	ArrayList<Object> saveState = (ArrayList) outputItems.clone();
+    	int savePos = pos;
     	for (int i = 0; i < parsers.length; i++) {
 	    	if (parsers[i].parse())
 	    		return true;
 	    	outputItems = saveState;
+	    	pos = savePos;
     	}
     	return false;
     }
@@ -227,12 +255,13 @@ public class JSONParser {
     			num.isExpNegative = true;
     		else
     			checkChar('+');
-    		num.frac = parseDigits();
-    		if (num.frac.equals("")){
+    		String digits = parseDigits();
+    		if (digits.equals("")){
     			return false;
     		}
+    		num.exp = Integer.parseInt(digits);
     	}
-    	this.outputItems.add(num);
+    	this.outputItems.add(num.calculateValue());
         return true;
     }
     
